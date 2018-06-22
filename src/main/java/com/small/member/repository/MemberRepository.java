@@ -2,8 +2,20 @@ package com.small.member.repository;
 
 import com.small.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-@Repository
-public interface MemberRepository extends JpaRepository<Member, Long> {
+import java.util.List;
+
+public interface MemberRepository
+        extends JpaRepository<Member, Long> {
+    // jpql - Member엔티티들중에서 조회하라.
+    // fetch join
+    @Query("select distinct m from Member m join fetch m.memberRoles")
+    public List<Member> getMembers();
+
+    @Query("select m from Member m join fetch m.memberRoles where m.id = :id")
+    public Member getMember(@Param("id") Long id);
+
+    public Member getMemberByEmail(String email);
 }

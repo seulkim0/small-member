@@ -1,4 +1,4 @@
-package com.small.member;
+package examples.small.member;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

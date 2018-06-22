@@ -1,27 +1,40 @@
 package com.small.member.domain;
 
-import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Data
 @Entity
 @Table(name = "member")
-public class Member {
-  @Id
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
-  Long id;
-  private String loginId;
-  private String passwd;
-  private String name;
-  private String phoneNumber;
-  @CreatedDate
-  private Instant createdAt;
-  private String createdBy;
-  @LastModifiedDate
-  private Instant lastModified;
-  private String lastModifiedBy;
+@Getter
+@Setter
+public class Member implements Serializable {
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String email;
+    private String passwd;
+    @Column(name="reg_date")
+    private LocalDateTime regdate;
+
+    // Member가 영속성을 가질때 memberRoles도 영속성을 가지도록 한다.
+    @JsonManagedReference
+    @OneToMany(mappedBy="member", cascade = CascadeType.ALL)
+    private List<MemberRole> memberRoles = new ArrayList<>();
+
+    // helper method
+    public void addMemberRole(MemberRole memberRole){
+        memberRoles.add(memberRole);
+        if(memberRole.getMember() != this){
+            memberRole.setMember(this);
+        }
+    }
 }
